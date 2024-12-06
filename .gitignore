@@ -9,7 +9,7 @@ Hybrid RAG with Azure Data Explorer/download/docs/
 Hybrid RAG with Azure Data Explorer/data/*.*
 Hybrid RAG with Azure Data Explorer/data/processed/embeddings.csv
 Hybrid RAG with Azure Data Explorer/data/processed/entities.csv
-Assistants/
+Assistants/not ready/
 
 # User-specific files
 *.rsuser
