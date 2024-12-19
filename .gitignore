@@ -11,6 +11,7 @@ Hybrid RAG with Azure Data Explorer/data/processed/embeddings.csv
 Hybrid RAG with Azure Data Explorer/data/processed/entities.csv
 Assistants/not ready/
 notready/
+RAG/Clause matching/data/
 
 # User-specific files
 *.rsuser
