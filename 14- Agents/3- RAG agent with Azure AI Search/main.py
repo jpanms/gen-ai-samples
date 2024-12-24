@@ -81,24 +81,24 @@ def calc_embeddings(text):
 
 # Define your tool function `search` that will interact with the Azure Cognitive Search service.
 def search(query: str):
-    fields = ["name", "description"]
+    fields = "embedding"
     embedding = calc_embeddings(query)
     vector_query = VectorizedQuery(vector=embedding, k_nearest_neighbors=3, fields=fields)
   
     results = aia_search_client.search(  
         search_text=None,  
         vector_queries= [vector_query],
-        select=["name", "description"],
+        select=["content"],
     )  
 
 
-    output = []
-    for result in results:
-        result.pop("titleVector")
-        result.pop("contentVector")
-        output.append(result)
+    answer = ''
+    for result in results:  
+        print(f"Score: {result['@search.score']}")  
+        print(f"Content: {result['content']}")  
+        answer = answer + result['content']
+    return answer
 
-    return output
 
 
 def define_agents():
@@ -141,7 +141,5 @@ if __name__ == "__main__":
 
     user_proxy.initiate_chat(
         manager,
-        message="""
-            Find all the products with the word 'laptop' in the description.
-        """,
+        message="Why does the coffin prepared for Queequeg become Ishmael's life buoy once the Pequod sinks?",
     )
