@@ -43,9 +43,7 @@ def call_openAI(text):
 
     system_message = """
 You are an assistant designed to extract entities from a food order transcript. 
-
 Users will enter in a string of text and you will respond with entities you've extracted from the text as a JSON object. 
-
 Here's an example of your output format:
 [  
     {    

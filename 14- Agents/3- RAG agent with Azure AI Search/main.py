@@ -3,6 +3,10 @@ import json
 from dotenv import load_dotenv
 import os
 from tenacity import retry, wait_random_exponential, stop_after_attempt
+import autogen
+from autogen import AssistantAgent, UserProxyAgent, register_function
+from autogen.cache import Cache
+from typing import Annotated
 from openai import AzureOpenAI
 from azure.identity import DefaultAzureCredential
 from azure.search.documents import SearchClient
@@ -67,7 +71,7 @@ aia_search_client = None
 def config_search():
     service_endpoint = os.getenv("AZURE_SEARCH_SERVICE_ENDPOINT")
     key = os.getenv("AZURE_SEARCH_ADMIN_KEY")
-    index_name = "product_data_csv"
+    index_name = "books"
     credential = AzureKeyCredential(key)
     return SearchClient(endpoint=service_endpoint, index_name=index_name, credential=credential)
 
@@ -80,7 +84,7 @@ def calc_embeddings(text):
     return embeddings
 
 # Define your tool function `search` that will interact with the Azure Cognitive Search service.
-def search(query: str):
+def do_search(query: Annotated[str, "the information"]) -> str:
     fields = "embedding"
     embedding = calc_embeddings(query)
     vector_query = VectorizedQuery(vector=embedding, k_nearest_neighbors=3, fields=fields)
@@ -90,7 +94,6 @@ def search(query: str):
         vector_queries= [vector_query],
         select=["content"],
     )  
-
 
     answer = ''
     for result in results:  
@@ -115,7 +118,7 @@ def define_agents():
     web_search_engineer = autogen.AssistantAgent(
         name="WebSearchEngineer",
         llm_config=llm_config,
-        system_message="""Engineer. You follow an approved plan. Make sure you save code to disk.  You write python/shell 
+        system_message="""Web Search Engineer. Make sure you save code to disk.  You write python/shell 
         code to solve tasks. Wrap the code in a code block that specifies the script type and the name of the file to 
         save to disk.""",
     )
@@ -123,10 +126,17 @@ def define_agents():
     aia_searcher = autogen.AssistantAgent(
         name="AzureAISearcher",
         llm_config=llm_config,
-        system_message="You are a helpful AI assistant that answers questions about the electronics product catalog only. "
-        "You can help with Azure AI Search on the electronics product catalog."
-        "Return 'TERMINATE' when the task is done.",
+        system_message="""
+            Assistant who has extra content retrieval power for questions about the Moby Dick's book, only use the functions you have been provided with. 
+            Reply TERMINATE when the task is done.""",
     )
+
+    # Register the tool signature with the assistant agent.
+    aia_searcher.register_for_llm(name="do_search", description="Get information about Moby Dick's book by Herman Melville.")(do_search)
+    # Register the tool function with the user proxy agent.
+    user_proxy.register_for_execution(name="do_search")(do_search)
+   
+
     group_chat = autogen.GroupChat(
         agents=[user_proxy, web_search_engineer, aia_searcher], messages=[], max_round=12
     )
