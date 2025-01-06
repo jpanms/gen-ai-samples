@@ -25,7 +25,10 @@ def main():
         ]
     }
 
-    assistant = autogen.AssistantAgent(name="Assistant",llm_config=llm_config)
+    assistant = autogen.AssistantAgent(
+        name="Assistant",
+        llm_config=llm_config
+    )
 
     user_proxy = autogen.UserProxyAgent(
         name="user",
