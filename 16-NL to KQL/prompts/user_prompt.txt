@@ -1,7 +1,7 @@
-$schema_prompt
+${schema_prompt}
 Below is a question input from a user.
 Generate a KQL query that pulls the necessary data to answer the question.
-Question: $question
+Question: ${question}
 Return your answer ONLY in JSON format as follows:
 {
   'explanation': '<explain what the query does>',
