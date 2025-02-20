@@ -1,0 +1,4 @@
+Below is the information for a SQL table.
+Schema:
+${tbl_creation_sql}
+------------------------------------------------------
