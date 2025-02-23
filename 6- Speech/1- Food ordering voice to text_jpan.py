@@ -26,7 +26,7 @@ client = AzureOpenAI(
 SPEECH_KEY = os.getenv("SPEECH_KEY")
 SPEECH_REGION = os.getenv("SPEECH_REGION")
 
-print(f"Model: {OPENAI_GPT4_DEPLOYMENT_NAME}; API Version:{AZURE_OPENAI_API_VERSION}")
+print(f"Model: {OPENAI_GPT4_DEPLOYMENT_NAME}; API Version:{OPENAI_API_VERSION}")
 print("Azure OpenAI Chatbot is ready to use!")
 print(f"Speech Service in {SPEECH_REGION} is ready to use!")
 
