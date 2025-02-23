@@ -14,6 +14,9 @@ param speech_location string = 'australiaeast'
 param vision_location string = 'australiaeast'
 
 // OpenAI params
+// jpan's region is australiaeast
+// jpan's workshop date is 2025-02-26
+// Region availability: https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models?tabs=standard%2Cstandard-chat-completions#model-summary-table-and-region-availability
 param OpenAIServiceName string = 'openai-${uniqueString(resourceGroup().id)}'
 param openai_deployments array = [
   {
@@ -27,29 +30,35 @@ param openai_deployments array = [
   {
     name: 'gpt-4'
 	  model_name: 'gpt-4'
-    //version: '1106-Preview'
+    //lastest australiaeast global standard 4: turbo-2024-04-09
     version: 'turbo-2024-04-09'
     raiPolicyName: 'Microsoft.Default'
     sku_capacity: 20
     sku_name: 'GlobalStandard'
+    //lastest australiaeast standard 4: 1106-Preview
+    //version: '1106-Preview'
     //sku_name: 'Standard'
   }
   {
     name: 'gpt-4o'
 	  model_name: 'gpt-4o'
+    //lastest australiaeast global standard 4: 2024-08-06
     version: '2024-08-06'
     raiPolicyName: 'Microsoft.Default'
     sku_capacity: 20
     sku_name: 'GlobalStandard'
+    //latest australiaeast standard 4o: none
     //sku_name: 'Standard'
   }
   {
     name: 'gpt-4o-mini'
 	  model_name: 'gpt-4o-mini'
+    //lastest australiaeast global standard 4o-mini: 2024-07-18
     version: '2024-07-18'
     raiPolicyName: 'Microsoft.Default'
     sku_capacity: 20
     sku_name: 'GlobalStandard'
+    //latest australiaeast standard 4o-mini: none
     //sku_name: 'Standard'
   }
   {
