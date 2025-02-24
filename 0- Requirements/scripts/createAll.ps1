@@ -1,4 +1,4 @@
-$SubscriptionId = '89f07bef-2e3f-4ee3-abba-a38a0d048a9e'
+$SubscriptionId = '<your-subscription-id>'
 $resourceGroupName = "jpan-genai-workshop"
 $location = "australiaeast"
 
