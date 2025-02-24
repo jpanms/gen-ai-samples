@@ -1,7 +1,6 @@
 # Food orders – speech to text to JSON – get a food order, use Azure AI Speech Cognitive service to transform 
-# speech to text and then using Azure OpenAI GPT3.5 to extract a JSON object that represents the order and can be used to search in a Database
+# speech to text and then using Azure OpenAI GPT4 to extract a JSON object that represents the order and can be used to search in a Database
 # In this case we are extracting restaurant order entities.
-# try saying:  I would like to order a large burger which French fries and a large coke.
 
 import azure.cognitiveservices.speech as speechsdk
 from dotenv import load_dotenv
@@ -12,22 +11,22 @@ import os
 
 load_dotenv()
 
-OPENAI_DEPLOYMENT_ENDPOINT = os.getenv("AISTUDIO_AZURE_OPENAI_ENDPOINT")
-OPENAI_API_KEY = os.getenv("AISTUDIO_AZURE_OPENAI_KEY")
-OPENAI_GPT4_DEPLOYMENT_NAME = os.getenv("AISTUDIO_OPENAI_GPT4_DEPLOYMENT_NAME")
-OPENAI_API_VERSION=os.getenv("AISTUDIO_AZURE_OPENAI_API_VERSION")
+AZURE_OPENAI_ENDPOINT=os.getenv("AZURE_OPENAI_ENDPOINT")
+AZURE_OPENAI_KEY=os.getenv("AZURE_OPENAI_KEY")
+AZURE_OPENAI_API_VERSION=os.getenv("AZURE_OPENAI_API_VERSION")
+AZURE_OPENAI_GPT4_DEPLOYMENT=os.getenv("AZURE_OPENAI_GPT4_DEPLOYMENT")
 
 client = AzureOpenAI(
-  azure_endpoint = OPENAI_DEPLOYMENT_ENDPOINT, 
-  api_key=OPENAI_API_KEY,  
-  api_version=OPENAI_API_VERSION
+  azure_endpoint = AZURE_OPENAI_ENDPOINT, 
+  api_key=AZURE_OPENAI_KEY,  
+  api_version=AZURE_OPENAI_API_VERSION
 )
 
 SPEECH_KEY = os.getenv("SPEECH_KEY")
 SPEECH_REGION = os.getenv("SPEECH_REGION")
 
-print(f"Model: {OPENAI_GPT4_DEPLOYMENT_NAME}; API Version:{OPENAI_API_VERSION}")
-print("Azure OpenAI Chatbot is ready to use!")
+print(f"Model: {AZURE_OPENAI_GPT4_DEPLOYMENT}; API Version:{AZURE_OPENAI_API_VERSION}")
+print("Azure OpenAI model is ready to use!")
 print(f"Speech Service in {SPEECH_REGION} is ready to use!")
 
 
@@ -98,7 +97,7 @@ Here's an example of your output format:
         {"role":"system","content":system_message},
         {"role":"user","content":text}]
     response = client.chat.completions.create(
-        model=OPENAI_GPT4_DEPLOYMENT_NAME,
+        model=AZURE_OPENAI_GPT4_DEPLOYMENT,
         messages = message_text,
         temperature=0.7,
         max_tokens=800,
@@ -110,8 +109,10 @@ Here's an example of your output format:
 
     return response.choices[0].message.content
 
+#try below order
 '''I would like to order a classic angus beef burger with zero coke and large French fries,
  a mr spicy chicken burger with small iced latte and garden salad, and two apple pies.'''
+
 if __name__ == "__main__":
     text = voice_to_text()
     response = call_openAI(text)

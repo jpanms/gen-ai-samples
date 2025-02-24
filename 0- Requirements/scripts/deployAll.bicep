@@ -4,9 +4,18 @@ param location string = resourceGroup().location
 // SQL Server params
 param serverName string = 'sqlserver-${uniqueString(resourceGroup().id)}'
 param databaseName string = 'genaiworks'
-param adminLogin string = 'SqlAdmin'
+param adminLoginsql string = 'SqlAdmin'
 @secure()
-param adminPassword string = 'jpangenaiworkshop@au2025!'
+param adminPasswordsql string = 'jpangenaiworkshop@au2025!'
+
+// Cosmos DB params
+@maxLength(44)
+param clusterName string = 'msdocs-${uniqueString(resourceGroup().id)}'
+param adminUsernamecosmos string = 'CosmosAdmin'
+@secure()
+@minLength(8)
+@maxLength(128)
+param adminPasswordcosmos string = 'jpangenaiworkshop@au2025!cosmos'
 
 // Speech Service params
 param SpeechServiceName string = 'aispeech-${uniqueString(resourceGroup().id)}'
@@ -23,6 +32,14 @@ param openai_deployments array = [
     name: 'text-embedding-ada-002'
 	  model_name: 'text-embedding-ada-002'
     version: '2'
+    raiPolicyName: 'Microsoft.Default'
+    sku_capacity: 20
+    sku_name: 'Standard'
+  }
+  {
+    name: 'text-embedding-3-small'
+	  model_name: 'text-embedding-3-small'
+    version: '1'
     raiPolicyName: 'Microsoft.Default'
     sku_capacity: 20
     sku_name: 'Standard'
@@ -45,7 +62,7 @@ param openai_deployments array = [
     //lastest australiaeast global standard 4: 2024-08-06
     version: '2024-08-06'
     raiPolicyName: 'Microsoft.Default'
-    sku_capacity: 20
+    sku_capacity: 120
     sku_name: 'GlobalStandard'
     //latest australiaeast standard 4o: none
     //sku_name: 'Standard'
@@ -78,6 +95,7 @@ param aisearch_name string = 'aisearch-${uniqueString(resourceGroup().id)}'
 param aivision_name string = 'aivision-${uniqueString(resourceGroup().id)}'
 
 
+//resources
 //Azure SQL Server, firewall rule, and database
 resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
   name: serverName
@@ -86,8 +104,8 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
     type: 'SystemAssigned'
   }
   properties: {
-    administratorLogin: adminLogin
-    administratorLoginPassword: adminPassword
+    administratorLogin: adminLoginsql
+    administratorLoginPassword: adminPasswordsql
   }
 }
 
@@ -110,6 +128,35 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
   }
 }
 
+//Cosmos DB
+resource cluster 'Microsoft.DocumentDB/mongoClusters@2022-10-15-preview' = {
+  name: clusterName
+  location: location
+  properties: {
+    administratorLogin: adminUsernamecosmos
+    administratorLoginPassword: adminPasswordcosmos
+    nodeGroupSpecs: [
+        {
+            kind: 'Shard'
+            shardCount: 1
+            sku: 'M40'
+            diskSizeGB: 128
+            enableHa: false
+        }
+    ]
+  }
+}
+
+resource firewallRules 'Microsoft.DocumentDB/mongoClusters/firewallRules@2022-10-15-preview' = {
+  parent: cluster
+  name: 'AllowAllAzureServices'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
+//Speech Service
 resource cognitiveService 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   name: SpeechServiceName
   location: speech_location
@@ -124,6 +171,7 @@ resource cognitiveService 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   }
 }
 
+//OpenAI
 resource openai 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   name: OpenAIServiceName
   location: location
@@ -156,6 +204,7 @@ resource model 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = [
   }
 }]
 
+//Computer Vision
 resource vision 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   name: aivision_name
   location: vision_location
@@ -170,6 +219,7 @@ resource vision 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   }
 }
 
+//AI Search
 resource search 'Microsoft.Search/searchServices@2024-06-01-Preview' = {
   name: aisearch_name
   location: location
