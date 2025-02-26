@@ -6,7 +6,7 @@ param serverName string = 'sqlserver-${uniqueString(resourceGroup().id)}'
 param databaseName string = 'genaiworks'
 param adminLoginsql string = 'SqlAdmin'
 @secure()
-param adminPasswordsql string = 'jpangenaiworkshop@au2025!'
+param adminPasswordsql string = '<mypw>'
 
 // Cosmos DB params
 @maxLength(44)
@@ -15,7 +15,7 @@ param adminUsernamecosmos string = 'CosmosAdmin'
 @secure()
 @minLength(8)
 @maxLength(128)
-param adminPasswordcosmos string = 'jpangenaiworkshop@au2025!cosmos'
+param adminPasswordcosmos string = '<mypw>'
 
 // Speech Service params
 param SpeechServiceName string = 'aispeech-${uniqueString(resourceGroup().id)}'
